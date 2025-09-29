@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'SpoofVacuum',
       theme: ThemeData(
         
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 3, 102, 122)),
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
@@ -189,18 +189,81 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _positionCard() {
     if (_currentPosition == null) {
-      return const Text('');
+      return const Text('GPS Matrix\n');
     }
     final p = _currentPosition!;
     return Column(
+  crossAxisAlignment: CrossAxisAlignment.stretch,
+  children: [
+    // Table header
+    Container(
+      color: Color.fromARGB(255, 3, 102, 122),
+      padding: const EdgeInsets.all(12),
+      child: const Center(
+        child: Text(
+          'GPS Matrix',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    ),
+
+    // Table body
+    Table(
+      border: TableBorder.all(color: Colors.grey),
+      columnWidths: const {
+        0: FlexColumnWidth(2),
+        1: FlexColumnWidth(3),
+      },
       children: [
-        //Text('Point: $_locationName'),
-        Text('Lat: ${p.latitude}'),
-        Text('Lng: ${p.longitude}'),
-        Text('Accuracy: ${p.accuracy} m'),
-        Text('Time: ${p.timestamp}'),
+        TableRow(children: [
+          const Padding(
+            padding: EdgeInsets.all(6.0),
+            child: Text("Latitude"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Text("${p.latitude}"),
+          ),
+        ]),
+        TableRow(children: [
+          const Padding(
+            padding: EdgeInsets.all(6.0),
+            child: Text("Longitude"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Text("${p.longitude}"),
+          ),
+        ]),
+        TableRow(children: [
+          const Padding(
+            padding: EdgeInsets.all(6.0),
+            child: Text("Accuracy"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Text("${p.accuracy} m"),
+          ),
+        ]),
+        TableRow(children: [
+          const Padding(
+            padding: EdgeInsets.all(6.0),
+            child: Text("Time"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Text("${p.timestamp}"),
+          ),
+        ]),
       ],
-    );
+    ),
+  ],
+);
+
   }
 
 
@@ -284,14 +347,16 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
 
-            const SizedBox(height: 50),
+            const SizedBox(height: 25),
             Text(
               'Mode: ${_useRealLocation ? 'Real device location' : (_isMocking ? 'Spoofing location' : 'Yet') }',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 100),
+            const SizedBox(height: 50),
             const Text(
-                'Note: This Simulator violates location inside the whole mobile system. Do not forget to release or stop it to be able to use other apps.'),
+                'Note: This Simulator violates location inside the whole mobile system. Do not forget to release or stop it to be able to use other apps.',
+                style: TextStyle(fontSize: 13),
+                ),
           ],
         ),
       ),
@@ -301,7 +366,7 @@ class _MyHomePageState extends State<MyHomePage> {
     child: const Text(
       'Engineered by | Min Phyoe Min Thu',
       textAlign: TextAlign.center,
-      //style: TextStyle(color: Colors.blueGrey),
+      style: TextStyle(color: Color.fromARGB(255, 3, 94, 89),fontSize: 10),
     ),
   ),
     );
