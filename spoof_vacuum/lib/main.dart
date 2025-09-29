@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 void main() {
   runApp(const MyApp());
@@ -47,9 +48,10 @@ class _MyHomePageState extends State<MyHomePage> {
   StreamSubscription<Position>? _mockSub;
 
   // UI state
-  double _lat = 16.85011;
-  double _lng = 96.128573;
+  final _lat = 16.85011;
+  final _lng = 96.128573;
   Position? _currentPosition;
+  String? _locationName = 'Idel';
 
   // Geolocator stream settings (for real)
   final LocationSettings _locationSettings = const LocationSettings(
@@ -71,15 +73,14 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_isMocking) return;
     _isMocking = true;
 
-    // Immediately emit one position
     _emitMockPosition();
 
     _mockTimer = Timer.periodic(Duration(seconds: intervalSeconds), (_) {
       _emitMockPosition();
     });
 
-    // If currently selected stream is mock, subscribe
     _subscribeToMockStream();
+    //_getReadablePosition();
     setState(() {});
   }
 
@@ -111,13 +112,13 @@ class _MyHomePageState extends State<MyHomePage> {
     _mockTimer = null;
   }
 
-  // Subscribe to mock controller stream and update UI
   void _subscribeToMockStream() {
     _mockSub?.cancel();
     _mockSub = _mockController.stream.listen((pos) {
       setState(() {
         _currentPosition = pos;
       });
+      //_getReadablePosition();
     });
   }
 
@@ -144,9 +145,22 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _currentPosition = pos;
       });
+      //_getReadablePosition();
     }, onError: (e) {
       _showSnack('Error from location stream: $e');
     });
+  }
+
+  Future<void> _getReadablePosition() async{
+    final placemarks =
+          await placemarkFromCoordinates(_currentPosition!.latitude, _currentPosition!.longitude);
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        setState(() {
+          _locationName =
+              "${place.name},${place.street},${place.locality}, ${place.administrativeArea}, ${place.country}";
+        });
+      }
   }
 
   void _unsubscribeRealLocation() {
@@ -166,6 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _useRealLocation = v;
     });
+    //_getReadablePosition();
   }
 
   void _showSnack(String s) {
@@ -174,11 +189,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _positionCard() {
     if (_currentPosition == null) {
-      return const Text('No position yet');
+      return const Text('');
     }
     final p = _currentPosition!;
     return Column(
       children: [
+        //Text('Point: $_locationName'),
         Text('Lat: ${p.latitude}'),
         Text('Lng: ${p.longitude}'),
         Text('Accuracy: ${p.accuracy} m'),
@@ -240,6 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: _isMocking ? _stopMocking : null,
                   child: const Text('Stop'),
                 ),
+                const SizedBox(width: 30),
                 Column(
                   children: [
                     Row(
@@ -267,19 +284,26 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 50),
             Text(
               'Mode: ${_useRealLocation ? 'Real device location' : (_isMocking ? 'Spoofing location' : 'Yet') }',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 100),
             const Text(
-                'Note: This app simulates location inside the whole mobile system. Do not forget to release or stop it to be able to use other apps.'),
-            const SizedBox(height: 8),
-            const Text('Engineered by | Min Phyoe Min Thu')
+                'Note: This Simulator violates location inside the whole mobile system. Do not forget to release or stop it to be able to use other apps.'),
           ],
         ),
       ),
+      bottomNavigationBar: Container(
+    color: Colors.white,
+    padding: const EdgeInsets.all(16),
+    child: const Text(
+      'Engineered by | Min Phyoe Min Thu',
+      textAlign: TextAlign.center,
+      //style: TextStyle(color: Colors.blueGrey),
+    ),
+  ),
     );
   }
 }
