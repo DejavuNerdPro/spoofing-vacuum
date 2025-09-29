@@ -274,6 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            const SizedBox(height: 80),
             // Input lat/lng
             // Row(
             //   children: [
@@ -319,7 +320,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: _isMocking ? _stopMocking : null,
                   child: const Text('Stop'),
                 ),
-                const SizedBox(width: 30),
+                const SizedBox(width: 100),
                 Column(
                   children: [
                     Row(
@@ -337,22 +338,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 80),
 
             // current position display
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(9.0),
                 child: _positionCard(),
               ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 80),
             Text(
               'Mode: ${_useRealLocation ? 'Real device location' : (_isMocking ? 'Spoofing location' : 'Yet') }',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 80),
             const Text(
                 'Note: This Simulator violates location inside the whole mobile system. Do not forget to release or stop it to be able to use other apps.',
                 style: TextStyle(fontSize: 13),
@@ -366,7 +367,7 @@ class _MyHomePageState extends State<MyHomePage> {
     child: const Text(
       'Engineered by | Min Phyoe Min Thu',
       textAlign: TextAlign.center,
-      style: TextStyle(color: Color.fromARGB(255, 3, 94, 89),fontSize: 10),
+      style: TextStyle(color: Color.fromARGB(255, 3, 94, 89),fontSize: 12),
     ),
   ),
     );
