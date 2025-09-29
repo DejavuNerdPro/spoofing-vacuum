@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      debugShowCheckedModeBanner: false,
       home: const MyHomePage(title: 'Spoofing GPS'),
     );
   }
@@ -122,7 +123,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Subscribe to real device GPS stream (requires permissions)
   Future<void> _subscribeToRealLocation() async {
-    // permission flow
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -158,10 +158,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (v) {
       // switch to real
       await _subscribeToRealLocation();
-      // stop mock subscription (we can keep mocking running in background if desired)
       _mockSub?.cancel();
     } else {
-      // stop real stream and resume/subscribe to mock
       _unsubscribeRealLocation();
       if (_isMocking) _subscribeToMockStream();
     }
@@ -198,36 +196,37 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             // Input lat/lng
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    initialValue: _lat.toString(),
-                    keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true, signed: true),
-                    decoration: const InputDecoration(labelText: 'Latitude'),
-                    onChanged: (v) {
-                      final parsed = double.tryParse(v);
-                      if (parsed != null) _lat = parsed;
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    initialValue: _lng.toString(),
-                    keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true, signed: true),
-                    decoration: const InputDecoration(labelText: 'Longitude'),
-                    onChanged: (v) {
-                      final parsed = double.tryParse(v);
-                      if (parsed != null) _lng = parsed;
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: TextFormField(
+            //         initialValue: _lat.toString(),
+            //         keyboardType: const TextInputType.numberWithOptions(
+            //             decimal: true, signed: true),
+            //         decoration: const InputDecoration(labelText: 'Latitude'),
+            //         readOnly: true,
+            //         onChanged: (v) {
+            //           final parsed = double.tryParse(v);
+            //           if (parsed != null) _lat = parsed;
+            //         },
+            //       ),
+            //     ),
+            //     const SizedBox(width: 12),
+            //     Expanded(
+            //       child: TextFormField(
+            //         initialValue: _lng.toString(),
+            //         keyboardType: const TextInputType.numberWithOptions(
+            //             decimal: true, signed: true),
+            //         decoration: const InputDecoration(labelText: 'Longitude'),
+            //         onChanged: (v) {
+            //           final parsed = double.tryParse(v);
+            //           if (parsed != null) _lng = parsed;
+            //         },
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(height: 12),
 
             // mock start/stop & toggle real/mock
             Row(
@@ -235,19 +234,25 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 ElevatedButton(
                   onPressed: _isMocking ? null : () => _startMocking(),
-                  child: const Text('Start Mock'),
+                  child: const Text('Spoof'),
                 ),
                 ElevatedButton(
                   onPressed: _isMocking ? _stopMocking : null,
-                  child: const Text('Stop Mock'),
+                  child: const Text('Stop'),
                 ),
                 Column(
                   children: [
-                    const Text('Use real device location'),
-                    Switch(
+                    Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const Text('Real GPS'),
+                Switch(
                       value: _useRealLocation,
                       onChanged: (v) => _toggleUseReal(v),
                     ),
+                        ],
+                      ),
+  
                   ],
                 ),
               ],
@@ -264,12 +269,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
             const SizedBox(height: 16),
             Text(
-              'Mode: ${_useRealLocation ? 'Real device location' : (_isMocking ? 'Mocking (internal)' : 'Idle') }',
+              'Mode: ${_useRealLocation ? 'Real device location' : (_isMocking ? 'Spoofing location' : 'Yet') }',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             const Text(
-                'Note: This only simulates location inside this Flutter app. Other apps will still see the device GPS.'),
+                'Note: This app simulates location inside the whole mobile system. Do not forget to release or stop it to be able to use other apps.'),
+            const SizedBox(height: 8),
+            const Text('Engineered by | Min Phyoe Min Thu')
           ],
         ),
       ),
